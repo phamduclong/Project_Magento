@@ -1,0 +1,102 @@
+<?php
+
+if(isset($_GET['city'])){
+    $CityName = $_GET['city'];
+    $stringWeather = 'http://api.openweathermap.org/data/2.5/forecast?q='.$CityName.'&units=metric&cnt=7&appid=ed93d353f2fe449f83add280192305e5';
+}
+else{
+    $stringWeather = 'http://api.openweathermap.org/data/2.5/forecast?q=hanoi&units=metric&cnt=7&appid=ed93d353f2fe449f83add280192305e5';
+}
+$curl = curl_init();
+curl_setopt_array($curl, array(
+    CURLOPT_RETURNTRANSFER => True,
+    //CURLOPT_URL => 'http://api.openweathermap.org/data/2.5/forecast?q=hanoi&units=metric&cnt=7&appid=ed93d353f2fe449f83add280192305e5',
+    CURLOPT_URL => $stringWeather,
+    CURLOPT_USERAGENT => 'Nhom10 cURL',
+    CURLOPT_SSL_VERIFYPEER => false
+));
+
+$resp = curl_exec($curl);
+
+$weather = json_decode($resp);
+
+$list = $weather->list;
+$city = $weather->city;
+
+curl_close($curl);
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trang Thời Tiết</title>
+    <style type="text/css">
+        .wrap{
+            border: 2px solid orange;
+            margin: 5px;
+            width: 1000px;
+
+        }
+    </style>
+
+</head>
+<body align="center">
+<h1>Dự Báo Thời Tiết</h1>
+
+<h2 align="left">Tên Thành Phố : <?php echo $city->name; ?></h2>
+<h2 align="left">Quốc Gia : <?php echo $city->country; ?></h2>
+
+<form method="GET" action="helloweather" align="left">
+    <input type="text" name="city" placeholder="Nhập Tên Thành Phố Để Xem Dự Báo Thời Tiết" size="100px">
+    <input type="submit" value="OK">
+</form>
+<br>
+
+
+<table border="1" width="1000" bgcolor="#FDB628" style="color: black">
+    <tr width="300px" align="center">
+        <td colspan="8" style="font-weight:bold;font-size:20px">Bảng Dự Báo Thời Tiết</td>
+
+    </tr>
+
+    <tr width="300px">
+        <td>Ngày Giờ Chi Tiết</td>
+        <?php for($i = 0 ; $i < 7 ; ++$i){ ?>
+            <td><?php echo $list[$i]->dt_txt; ?></td>
+        <?php } ?>
+    </tr>
+
+    <tr width="300px">
+        <td>Nhiệt Độ</td>
+        <?php for($i = 0 ; $i < 7 ; ++$i){ ?>
+            <td><span style="font-size:20px;font-weight:bold;"><?php echo $list[$i]->main->temp; ?></span> <span style="font-size:20px;font-weight:bold;">℃</span></td>
+        <?php } ?>
+    </tr>
+
+    <tr width="300px">
+        <td>Độ Ẩm</td>
+        <?php for($i = 0 ; $i < 7 ; ++$i){ ?>
+            <td><span style="font-size:20px;font-weight:bold;"><?php echo $list[$i]->main->humidity; ?></span> <span style="font-size:20px;font-weight:bold;">%</span></td>
+        <?php } ?>
+    </tr>
+
+    <tr width="300px">
+        <td>Ảnh Dự Báo</td>
+        <?php for($i = 0 ; $i < 7 ; ++$i){ ?>
+            <td><?php $string = 'http://openweathermap.org/img/wn/'.$list[$i]->weather[0]->icon.'.png' ?>
+                <img src="<?php echo $string ?>"></td>
+        <?php } ?>
+    </tr>
+
+    <tr width="300px">
+        <td>Tốc Độ Gió</td>
+        <?php for($i = 0 ; $i < 7 ; ++$i){ ?>
+            <td><span style="font-size:20px;font-weight:bold;"><?php echo $list[$i]->wind->speed; ?></span> <span style="font-size:20px;font-weight:bold;">m/s</span></td>
+        <?php } ?>
+    </tr>
+
+
+</table>
+
+</body>
+</html>

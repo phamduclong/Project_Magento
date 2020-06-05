@@ -1,0 +1,59 @@
+<?php
+
+$curl = curl_init();
+curl_setopt_array($curl, array(
+    CURLOPT_RETURNTRANSFER => True,
+    CURLOPT_URL => 'https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx?b=68',
+    CURLOPT_USERAGENT => 'NhomSo10 cURL Request',
+    CURLOPT_SSL_VERIFYPEER => false
+));
+
+$resp = curl_exec($curl);
+
+$xml = simplexml_load_string($resp);
+
+curl_close($curl);
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trang Tỉ Giá Tiền Tệ</title>
+    <style type="text/css">
+        .wrap{
+            border: 2px solid orange;
+            margin: 5px;
+            width: 1000px;
+
+        }
+    </style>
+
+</head>
+<body>
+<h1>Tỉ Giá Tiền Tệ</h1>
+
+<h2>Ngày Và Giờ : <?php echo $xml->DateTime; ?></h2>
+
+<table border="1" width="500px">
+    <tr width="500px" bgcolor="#084E03" style="font-weight:bold;color:white">
+        <td>CurrencyName</td>
+        <td>CurrencyCode</td>
+        <td>Buy</td>
+        <td>Transfer</td>
+        <td>Sell</td>
+    </tr>
+
+    <?php for($i = 0 ; $i < 20 ; $i++){?>
+        <tr width="500px">
+            <td><?php echo $xml->Exrate[$i]['CurrencyName'] ;?></td>
+            <td><?php echo $xml->Exrate[$i]['CurrencyCode'] ;?></td>
+            <td><?php echo $xml->Exrate[$i]['Buy'] ;?></td>
+            <td><?php echo $xml->Exrate[$i]['Transfer'] ;?></td>
+            <td><?php echo $xml->Exrate[$i]['Sell'] ;?></td>
+        </tr>
+    <?php } ?>
+
+</table>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+<?php
+
+$curl = curl_init();
+curl_setopt_array($curl, array(
+    CURLOPT_RETURNTRANSFER => True,
+    CURLOPT_URL => 'https://vnexpress.net/rss/kinh-doanh.rss',
+    CURLOPT_USERAGENT => 'Nhom10 cURL Request',
+    CURLOPT_SSL_VERIFYPEER => false
+));
+
+$resp = curl_exec($curl);
+
+$xml = simplexml_load_string($resp);
+
+curl_close($curl);
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trang tin tức</title>
+    <style type="text/css">
+        .wrap{
+            border: 2px solid orange;
+            margin: 5px;
+            width: 1000px;
+
+        }
+    </style>
+</head>
+<body>
+<h1>Cập Nhật Tin Tức Hàng Ngày</h1>
+<?php foreach ($xml->channel->item as $entry){ ?>
+    <div class="wrap">
+        <a href="<?php echo $entry->link;?>">
+            <h2><?php echo $entry->title; ?></h2>
+            <div class="wrap-child">
+                <?php echo $entry->description; ?>
+            </div>
+        </a>
+    </div>
+<?php } ?>
+
+</body>
+</html>
